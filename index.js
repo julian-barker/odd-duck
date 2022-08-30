@@ -9,7 +9,7 @@ function _(tag) { return document.createElement(tag) }
 
 
 
-const iterations = 10;
+const iterations = 25;
 const perTest = 3;
 const products = [];
 const imgDir = './img/';
