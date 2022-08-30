@@ -10,6 +10,7 @@ function _(tag) { return document.createElement(tag) }
 
 
 const iterations = 10;
+const perTest = 3;
 const products = [];
 const imgDir = './img/';
 
@@ -51,7 +52,7 @@ function Product(imgDir, image) {
 
 function createChoices() {
   const choices = [];
-  while (choices.length < 3) {
+  while (choices.length < perTest) {
     const rand = Math.floor(Math.random() * products.length);
     if (!choices.includes(products[rand])) {
       choices.push(products[rand]);
