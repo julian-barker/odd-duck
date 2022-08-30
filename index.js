@@ -57,9 +57,16 @@ function createChoices() {
   const choices = [];
   while (choices.length < perTest) {
     const rand = Math.floor(Math.random() * products.length);
-    if (!choices.includes(products[rand])) {
-      choices.push(products[rand]);
+    const p = products[rand];
+    if (!choices.includes(p) && !pastChoices.includes(p)) {
+      choices.push(p);
     }
+  }
+  for (let choice of choices) {
+    if (pastChoices.length > 5) {
+      pastChoices.pop();
+    }
+    pastChoices.unshift(choice);
   }
   return choices;
 }
@@ -183,22 +190,22 @@ function displayResults(e) {
 
 function renderChart() {
   const canvasLike = document.getElementById('product-likes');
-  // const canvasView = document.getElementById('product-views');
-  // const canvasPerc = document.getElementById('product-percentages');
+  const canvasView = document.getElementById('product-views');
+  const canvasPerc = document.getElementById('product-percentages');
 
   const labels = [];
   const productLikes = [];
   const productViews = [];
-  const productPerc = [];
+  const productPercLikes = [];
 
   for (let prod of products) {
     labels.push(prod.name);
     productLikes.push(prod.timesLiked);
     productViews.push(prod.timesShown);
-    productPerc.push(Math.floor((prod.timesLiked / prod.timesShown) * 100));
+    productPercLikes.push(Math.floor((prod.timesLiked / prod.timesShown) * 100));
   }
 
-  const data = {
+  const likeData = {
     labels: labels,
     datasets: [{
       label: 'Likes',
@@ -206,26 +213,12 @@ function renderChart() {
       backgroundColor: ['rgba(255, 99, 132, 0.2)'],
       borderColor: ['rgb(255, 99, 132)'],
       borderWidth: 1
-    },
-    {
-      label: 'Views',
-      data: productViews,
-      backgroundColor: ['rgba(255, 159, 64, 0.2)'],
-      borderColor: ['rgb(255, 159, 64)'],
-      borderWidth: 1
-    },
-    {
-      label: 'Views',
-      data: productPerc,
-      backgroundColor: ['rgba(150, 159, 255, 0.2)'],
-      borderColor: ['rgb(255, 159, 64)'],
-      borderWidth: 1
     }]
   };
 
-  const config = {
+  const configLike = {
     type: 'bar',
-    data: data,
+    data: likeData,
     options: {
       scales: {
         y: {
@@ -235,6 +228,54 @@ function renderChart() {
     },
   };
 
-  const resultChart = new Chart(canvasLike, config);
+  const viewData = {
+    labels: labels,
+    datasets: [{
+      label: 'Views',
+      data: productViews,
+      backgroundColor: ['rgba(255, 159, 64, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    }]
+  };
+
+  const configView = {
+    type: 'bar',
+    data: viewData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const likePercData = {
+    labels: labels,
+    datasets: [{
+      label: 'Like Percentage',
+      data: productPercLikes,
+      backgroundColor: ['rgba(150, 159, 255, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    }]
+  };
+
+  const configPerc = {
+    type: 'bar',
+    data: likePercData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const likeChart = new Chart(canvasLike, configLike);
+  const viewChart = new Chart(canvasView, configView);
+  const percChart = new Chart(canvasPerc, configPerc);
 }
 
