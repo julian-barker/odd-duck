@@ -73,6 +73,7 @@ footer p {
 
 .sidebar {
   width: 20vw !important;
+  flex-shrink: 0;
   border-right: 4px solid grey;
   padding-left: 16px;
 }
@@ -128,6 +129,7 @@ footer p {
 }
 
 #view-results {
+  margin-top: 48px;
   height: 100px;
   width: 300px;
   color: rgb(186, 186, 186);
