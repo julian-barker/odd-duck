@@ -134,7 +134,7 @@ function displayResults(e) {
   
   images.innerHTML = '';
   sidebar.innerHTML = '';
-  // result.innerHTML = '';
+  result.innerHTML = '';
   sidebarTitle.innerHTML = 'Results:';
 
   let greatest = 0;

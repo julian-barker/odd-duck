@@ -51,6 +51,10 @@ b {
   font-weight: 600;
 }
 
+.break {
+  height: 80px;
+}
+
 footer p {
   margin-top: 32px;
 }
@@ -116,6 +120,11 @@ footer p {
 .winner p {
   margin-top: 32px;
   font-size: 1.5rem;
+}
+
+.result {
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 #view-results {
