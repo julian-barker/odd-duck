@@ -73,6 +73,7 @@ footer p {
 
 .sidebar {
   width: 20vw !important;
+  flex-shrink: 0;
   border-right: 4px solid grey;
   padding-left: 16px;
 }

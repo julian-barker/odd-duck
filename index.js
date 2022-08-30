@@ -1,22 +1,22 @@
 'use strict';
 
-
 // declare shortcut function
-function $(selector) { return document.querySelector(selector) }
-function $$(selector) { return document.querySelectorAll(selector) }
-function byId(id) { return document.getElementById(id) }
-function _(tag) { return document.createElement(tag) }
+function $(selector) { return document.querySelector(selector); }
+function $$(selector) { return document.querySelectorAll(selector); }
+function byId(id) { return document.getElementById(id); }
+function _(tag) { return document.createElement(tag); }
 
 
 
 const iterations = 25;
 const perTest = 3;
+const pastChoices = [];
 const products = [];
 const imgDir = './img/';
 
 let testCount;
 
-
+Product.all = [];
 new Product(imgDir, 'bag.jpg');
 new Product(imgDir, 'banana.jpg');
 new Product(imgDir, 'bathroom.jpg');
@@ -48,8 +48,11 @@ function Product(imgDir, image) {
   this.timesShown = 0;
   this.timesLiked = 0;
   this.id = products.push(this) - 1;
+  Product.all.push(this);
 }
 
+
+// determine which images to display
 function createChoices() {
   const choices = [];
   while (choices.length < perTest) {
@@ -61,10 +64,12 @@ function createChoices() {
   return choices;
 }
 
+
+// display the chosen images
 function displayChoices(choices) {
   const container = $('.images');
 
-  while (container.hasChildNodes()) {
+  if (container.hasChildNodes()) {
     container.innerHTML = '';
   }
 
@@ -86,7 +91,7 @@ function displayChoices(choices) {
 }
 
 function imgClick(e) {
-  products[parseInt(e.target.id)].timesLiked++; 
+  products[parseInt(e.target.id)].timesLiked++;
   runTestIteration();
 }
 
@@ -96,13 +101,13 @@ function runTestIteration() {
     displayChoices(choices);
     testCount++;
   } else {
-    const imgs = $$('.images img')
+    const imgs = $$('.images img');
     console.log(imgs);
     for (let img of imgs) {
       console.log(img);
       img.removeEventListener('click', imgClick);
     }
-    const div = $('.main-content');
+    const div = $('.images');
     const btn = _('button');
 
     btn.id = 'view-results';
@@ -131,7 +136,7 @@ function displayResults(e) {
   const result = $('.result');
   const sidebar = $('.sidebar');
   const sidebarTitle = _('h2');
-  
+
   images.innerHTML = '';
   sidebar.innerHTML = '';
   result.innerHTML = '';
@@ -144,7 +149,6 @@ function displayResults(e) {
 
   for (let prod of products) {
     const p = _('p');
-    const winPercentage = prod.timesLiked / prod.timesShown;
 
     p.innerHTML = `<b>${prod.name}</b>: ${prod.timesLiked} votes, ${prod.timesShown} views`;
     // p.innerHTML = `
@@ -165,12 +169,72 @@ function displayResults(e) {
   winnerImg.src = winner.image;
   winnerImg.alt = winner.name;
 
-  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.timesLiked} likes out of ${winner.timesShown} times shown and ${iterations} iterations.`
+  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.timesLiked} likes out of ${winner.timesShown} times shown and ${iterations} iterations.`;
 
   winnerDiv.appendChild(winnerImg);
   result.appendChild(winnerContent);
   images.appendChild(winnerDiv);
 
+  renderChart();
+
   e.target.removeEventListener('click', displayResults);
+}
+
+
+function renderChart() {
+  const canvasLike = document.getElementById('product-likes');
+  // const canvasView = document.getElementById('product-views');
+  // const canvasPerc = document.getElementById('product-percentages');
+
+  const labels = [];
+  const productLikes = [];
+  const productViews = [];
+  const productPerc = [];
+
+  for (let prod of products) {
+    labels.push(prod.name);
+    productLikes.push(prod.timesLiked);
+    productViews.push(prod.timesShown);
+    productPerc.push(Math.floor((prod.timesLiked / prod.timesShown) * 100));
+  }
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Likes',
+      data: productLikes,
+      backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+      borderColor: ['rgb(255, 99, 132)'],
+      borderWidth: 1
+    },
+    {
+      label: 'Views',
+      data: productViews,
+      backgroundColor: ['rgba(255, 159, 64, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    },
+    {
+      label: 'Views',
+      data: productPerc,
+      backgroundColor: ['rgba(150, 159, 255, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    }]
+  };
+
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const resultChart = new Chart(canvasLike, config);
 }
 
