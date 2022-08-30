@@ -189,9 +189,27 @@ function displayResults(e) {
 
 
 function renderChart() {
-  const canvasLike = document.getElementById('product-likes');
-  const canvasView = document.getElementById('product-views');
-  const canvasPerc = document.getElementById('product-percentages');
+  const div = $('.graphs');
+
+  const canvasLike = _('canvas');
+  const canvasView = _('canvas');
+  const canvasPerc = _('canvas');
+
+  canvasLike.id = 'product-likes';
+  canvasLike.width = '600';
+  canvasLike.height = '400';
+
+  canvasView.id = 'product-views';
+  canvasView.width = '600';
+  canvasView.height = '400';
+
+  canvasPerc.id = 'product-percentages';
+  canvasPerc.width = '600';
+  canvasPerc.height = '400';
+
+  div.appendChild(canvasLike);
+  div.appendChild(canvasView);
+  div.appendChild(canvasPerc);
 
   const labels = [];
   const productLikes = [];
@@ -199,7 +217,7 @@ function renderChart() {
   const productPercLikes = [];
 
   for (let prod of products) {
-    labels.push(prod.name);
+    labels.push(prod.name.slice(0,1).toUpperCase() + prod.name.slice(1));
     productLikes.push(prod.timesLiked);
     productViews.push(prod.timesShown);
     productPercLikes.push(Math.floor((prod.timesLiked / prod.timesShown) * 100));
@@ -277,5 +295,6 @@ function renderChart() {
   const likeChart = new Chart(canvasLike, configLike);
   const viewChart = new Chart(canvasView, configView);
   const percChart = new Chart(canvasPerc, configPerc);
+
 }
 

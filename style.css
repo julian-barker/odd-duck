@@ -129,6 +129,7 @@ footer p {
 }
 
 #view-results {
+  margin-top: 48px;
   height: 100px;
   width: 300px;
   color: rgb(186, 186, 186);
