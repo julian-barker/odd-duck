@@ -1,6 +1,6 @@
 
 html {
- font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+ font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -9,30 +9,34 @@ body {
 }
 
 header {
-  border: 2px solid gray;
+  /* border: 2px solid gray; */
   padding-left: 32px;
   height: 100px;
   width: 100vw;
   position: fixed;
   top: 0;
   left: 0;
+  box-shadow: 2px 4px 8px 1px rgb(90, 90, 90);
   display: flex;
   background-color: rgb(18, 18, 18);
   color: rgb(216, 216, 216);
-  text-shadow: 2px 2px 6px lightgrey;
+  /* text-shadow: 1px 1px 4px lightgrey; */
+  
 }
 
 main {
-  margin-top: 100px;
-  border: 2px solid gray;
+  /* margin-top: 100px; */
+  /* border: 2px solid gray; */
   min-height: 90vh;
   display: flex;
 }
 
 footer {
-  border: 2px solid gray;
+  /* border: 2px solid gray; */
+  padding-top: 40px;
   height: 100px;
   text-align: center;
+  background-color: rgb(154, 152, 145);
 }
 
 
@@ -55,10 +59,6 @@ b {
   height: 80px;
 }
 
-footer p {
-  margin-top: 32px;
-}
-
 .main-content {
   flex-grow: 1;
   display: flex;
@@ -71,21 +71,22 @@ footer p {
   margin-bottom: 32px;
 }
 
-.sidebar {
-  width: 20vw !important;
+.side-column {
+  width: 25vw;
   flex-shrink: 0;
-  border-right: 4px solid grey;
+  /* border-right: 4px solid grey; */
   padding-left: 16px;
+  background-color: goldenrod;
 }
 
-.sidebar p {
+.side-column p {
   padding-left: 16px;
   margin-bottom: 8px;
 }
 
 .images {
   width: 100%;
-  max-width: 80vw;
+  height: 400px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -93,17 +94,21 @@ footer p {
 }
 
 .images > div:not(.winner) {
+  box-shadow: 8px 8px 8px 4px rgb(53, 53, 53);
   padding-top: 16px;
   padding-bottom: 16px;
-  box-shadow: 8px 8px 8px 4px rgb(36, 36, 36);
+  /* height: 300px; */
   width: 30%;
   background-color: grey;
   display: grid;
   place-items: center;
+  
 }
 
 .testImg {
-  width: 80%;
+  width: 90%;
+  max-height: 270px !important;
+  object-fit: contain;
 }
 
 .winner {
@@ -128,10 +133,43 @@ footer p {
   padding-right: 40px;
 }
 
+.graphs > div {
+  height: 400px;
+  width: 600px;
+}
+
 #view-results {
   margin-top: 48px;
   height: 100px;
   width: 300px;
   color: rgb(186, 186, 186);
   background-color: rgb(19, 19, 19);
+}
+
+#header-space {
+  margin-top: 100px;
+}
+
+/* @media screen and (max-width: 600px) {
+  
+} */
+
+#sidebar {
+  width: 5vw;
+  background-color: rgb(30, 30, 30);
+  flex-shrink: 0;
+}
+
+#sidebar button {
+  width: 95%;
+  height: 5vw;
+  background-color: black;
+  color: whitesmoke;
+  margin: 2px;
+  border: none;
+}
+
+#sidebar button:hover {
+  background-color: rgb(20, 20, 20);
+  border: 1px solid gray;
 }
