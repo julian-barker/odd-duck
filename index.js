@@ -200,7 +200,7 @@ function displayResults() {
   winnerImg.src = winner.image;
   winnerImg.alt = winner.name;
 
-  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.sessionLikes} likes out of ${winner.sessionViews} times shown and ${iterations} iterations.`;
+  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.sessionLikes} likes out of ${winner.sessionViews} times shown and ${testCount - 1} iterations.`;
 
   winnerDiv.appendChild(winnerImg);
   result.appendChild(winnerDiv);
