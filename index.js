@@ -3,52 +3,63 @@
 // declare shortcut function
 function $(selector) { return document.querySelector(selector); }
 function $$(selector) { return document.querySelectorAll(selector); }
-function byId(id) { return document.getElementById(id); }
 function _(tag) { return document.createElement(tag); }
-
+// function byId(id) { return document.getElementById(id); }
 
 
 const iterations = 25;
 const perTest = 3;
 const pastChoices = [];
-const products = [];
 const imgDir = './img/';
 
-let testCount;
+let products = [];
 
-Product.all = [];
-new Product(imgDir, 'bag.jpg');
-new Product(imgDir, 'banana.jpg');
-new Product(imgDir, 'bathroom.jpg');
-new Product(imgDir, 'boots.jpg');
-new Product(imgDir, 'breakfast.jpg');
-new Product(imgDir, 'bubblegum.jpg');
-new Product(imgDir, 'chair.jpg');
-new Product(imgDir, 'cthulhu.jpg');
-new Product(imgDir, 'dog-duck.jpg');
-new Product(imgDir, 'dragon.jpg');
-new Product(imgDir, 'pen.jpg');
-new Product(imgDir, 'pet-sweep.jpg');
-new Product(imgDir, 'scissors.jpg');
-new Product(imgDir, 'shark.jpg');
-new Product(imgDir, 'sweep.png');
-new Product(imgDir, 'tauntaun.jpg');
-new Product(imgDir, 'unicorn.jpg');
-new Product(imgDir, 'water-can.jpg');
-new Product(imgDir, 'wine-glass.jpg');
+let testCount;
+// console.log(localStorage['products']);
+const maybe = localStorage['products'];
+if (maybe) {
+  products = JSON.parse(maybe);
+} else {
+  new Product(imgDir, 'bag.jpg');
+  new Product(imgDir, 'banana.jpg');
+  new Product(imgDir, 'bathroom.jpg');
+  new Product(imgDir, 'boots.jpg');
+  new Product(imgDir, 'breakfast.jpg');
+  new Product(imgDir, 'bubblegum.jpg');
+  new Product(imgDir, 'chair.jpg');
+  new Product(imgDir, 'cthulhu.jpg');
+  new Product(imgDir, 'dog-duck.jpg');
+  new Product(imgDir, 'dragon.jpg');
+  new Product(imgDir, 'pen.jpg');
+  new Product(imgDir, 'pet-sweep.jpg');
+  new Product(imgDir, 'scissors.jpg');
+  new Product(imgDir, 'shark.jpg');
+  new Product(imgDir, 'sweep.png');
+  new Product(imgDir, 'tauntaun.jpg');
+  new Product(imgDir, 'unicorn.jpg');
+  new Product(imgDir, 'water-can.jpg');
+  new Product(imgDir, 'wine-glass.jpg');
+  localStorage['products'] = JSON.stringify(products);
+}
+
+// console.log(products);
+for (let prod of products) {
+  prod.sessionViews = 0;
+  prod.sessionLikes = 0;
+}
 
 
 startTest();
 
 
-
 function Product(imgDir, image) {
   this.image = `${imgDir}${image}`;
   this.name = image.substr(0, image.lastIndexOf('.'));
-  this.timesShown = 0;
-  this.timesLiked = 0;
+  this.sessionLikes = 0;
+  this.sessionViews = 0;
+  this.totalLikes = 0;
+  this.totalViews = 0;
   this.id = products.push(this) - 1;
-  Product.all.push(this);
 }
 
 
@@ -62,6 +73,7 @@ function createChoices() {
       choices.push(p);
     }
   }
+  // console.log(choices);
   for (let choice of choices) {
     if (pastChoices.length > 5) {
       pastChoices.pop();
@@ -93,76 +105,88 @@ function displayChoices(choices) {
     div.appendChild(img);
     container.appendChild(div);
 
-    choice.timesShown++;
+    choice.sessionViews++;
+    choice.totalViews++;
+    localStorage['products'] = JSON.stringify(products);
   }
 }
 
+// run a new test iteration every time an image is clicked
 function imgClick(e) {
-  products[parseInt(e.target.id)].timesLiked++;
+  products[parseInt(e.target.id)].sessionLikes++;
+  products[parseInt(e.target.id)].totalLikes++;
+  localStorage['products'] = JSON.stringify(products);
   runTestIteration();
 }
 
+// for a new test iteration, create the array of choices and then display them, adding event handlers to the images
+// if max iterations is reached, present user with results button
 function runTestIteration() {
-  if (testCount < iterations) {
-    const choices = createChoices();
-    displayChoices(choices);
-    testCount++;
-  } else {
-    const imgs = $$('.images img');
-    console.log(imgs);
-    for (let img of imgs) {
-      console.log(img);
-      img.removeEventListener('click', imgClick);
+  if ( testCount === iterations) {
+    // for (let prod of products) {
+    //   prod.totalLikes += prod.sessionLikes;
+    //   prod.totalViews += prod.sessionViews;
+    //   // console.log(prod.sessionViews, prod.totalViews);
+    // }
+    const imgs = $$('.testImg');
+    for (let image of imgs) {
+      image.removeEventListener('click', imgClick);
     }
+
     const div = $('.images');
     const btn = _('button');
 
     btn.id = 'view-results';
     btn.addEventListener('click', displayResults);
+    btn.addEventListener('click', runTestIteration);
     btn.textContent = 'View Results';
     div.appendChild(btn);
+  } else {
+    if (testCount > iterations) {
+      displayResults();
+    }
+    const choices = createChoices();
+    displayChoices(choices);
   }
+  testCount++;
 }
 
 
-
+// initializes the test
 function startTest() {
-  for (let prod of products) {
-    prod.timesShown = 0;
-    prod.timesLiked = 0;
-  }
-
   testCount = 0;
   runTestIteration();
 }
 
 
+// displays results after view-results button is pressed
+function displayResults() {
+  if ($('#view-results')) {
+    $('#view-results').remove();
+  }
 
-function displayResults(e) {
   const images = $('.images');
   const result = $('.result');
-  const sidebar = $('.sidebar');
-  const sidebarTitle = _('h2');
+  const sideColumn = $('.side-column');
+  const sideColumnTitle = _('h2');
 
   images.innerHTML = '';
-  sidebar.innerHTML = '';
+  sideColumn.innerHTML = '';
   result.innerHTML = '';
-  sidebarTitle.innerHTML = 'Results:';
+  sideColumnTitle.innerHTML = 'Results:';
 
   let greatest = 0;
   let winner;
 
-  sidebar.appendChild(sidebarTitle);
+  sideColumn.appendChild(sideColumnTitle);
 
   for (let prod of products) {
     const p = _('p');
 
-    p.innerHTML = `<b>${prod.name}</b>: ${prod.timesLiked} votes, ${prod.timesShown} views`;
-    // p.innerHTML = `
-    // ${prod.name}: shown ${prod.timesShown} times (${Math.floor(prod.timesShown / 25 * 100)}%)  -  liked ${prod.timesLiked} times (${Math.floor(prod.timesLiked / 25 * 100)}%)`;
-    sidebar.appendChild(p);
-    if (prod.timesLiked > greatest) {
-      greatest = prod.timesLiked;
+    p.innerHTML = `<b>${prod.name}</b>: ${prod.sessionLikes} votes, ${prod.sessionViews} views`;
+    sideColumn.appendChild(p);
+    if (prod.sessionLikes > greatest) {
+      greatest = prod.sessionLikes;
       winner = prod;
     }
   }
@@ -176,90 +200,96 @@ function displayResults(e) {
   winnerImg.src = winner.image;
   winnerImg.alt = winner.name;
 
-  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.timesLiked} likes out of ${winner.timesShown} times shown and ${iterations} iterations.`;
+  winnerContent.innerHTML = `The winner is ${winner.name}, with ${winner.sessionLikes} likes out of ${winner.sessionViews} times shown and ${testCount - 1} iterations.`;
 
   winnerDiv.appendChild(winnerImg);
+  result.appendChild(winnerDiv);
   result.appendChild(winnerContent);
-  images.appendChild(winnerDiv);
 
   renderChart();
 
-  e.target.removeEventListener('click', displayResults);
+  localStorage['products'] = JSON.stringify(products);
 }
 
 
+// render results charts on results press
 function renderChart() {
   const div = $('.graphs');
 
-  const canvasLike = _('canvas');
-  const canvasView = _('canvas');
-  const canvasPerc = _('canvas');
+  const sessionRawDiv = _('div');
+  const sessionPercDiv = _('div');
+  const totalRawDiv = _('div');
+  const totalPercDiv = _('div');
 
-  canvasLike.id = 'product-likes';
-  canvasLike.width = '600';
-  canvasLike.height = '400';
+  const sessionRawCanvas = _('canvas');
+  const sessionPercCanvas = _('canvas');
+  const totalRawCanvas = _('canvas');
+  const totalPercCanvas = _('canvas');
 
-  canvasView.id = 'product-views';
-  canvasView.width = '600';
-  canvasView.height = '400';
+  sessionRawCanvas.id = 'session-product-data';
+  // canvasLike.width = '240';
+  // canvasLike.height = '160';
 
-  canvasPerc.id = 'product-percentages';
-  canvasPerc.width = '600';
-  canvasPerc.height = '400';
+  sessionPercCanvas.id = 'session-product-percentages';
+  // canvasPerc.width = '240';
+  // canvasPerc.height = '160';
 
-  div.appendChild(canvasLike);
-  div.appendChild(canvasView);
-  div.appendChild(canvasPerc);
+  totalRawCanvas.id = 'total-product-data';
+  totalPercCanvas.id = 'total-product-percentages';
+
+  sessionRawDiv.appendChild(sessionRawCanvas);
+  sessionPercDiv.appendChild(sessionPercCanvas);
+  totalRawDiv.appendChild(totalRawCanvas);
+  totalPercDiv.appendChild(totalPercCanvas);
+
+
+  div.appendChild(sessionRawDiv);
+  div.appendChild(sessionPercDiv);
+  div.appendChild(totalRawDiv);
+  div.appendChild(totalPercDiv);
 
   const labels = [];
-  const productLikes = [];
-  const productViews = [];
-  const productPercLikes = [];
+  const sessionLikes = [];
+  const sessionViews = [];
+  const sessionPercLikes = [];
+
+  const totalLikes = [];
+  const totalViews = [];
+  const totalPercLikes = [];
 
   for (let prod of products) {
     labels.push(prod.name.slice(0,1).toUpperCase() + prod.name.slice(1));
-    productLikes.push(prod.timesLiked);
-    productViews.push(prod.timesShown);
-    productPercLikes.push(Math.floor((prod.timesLiked / prod.timesShown) * 100));
+    sessionLikes.push(prod.sessionLikes);
+    sessionViews.push(prod.sessionViews);
+    sessionPercLikes.push(Math.floor((prod.sessionLikes / prod.sessionViews) * 100));
+    totalLikes.push(prod.totalLikes);
+    totalViews.push(prod.totalViews);
+    console.log(prod.totalViews);
+    totalPercLikes.push(Math.floor((prod.totalLikes / prod.totalViews) * 100));
   }
+  console.log(totalViews);
 
-  const likeData = {
+  const sessionRawData = {
     labels: labels,
     datasets: [{
       label: 'Likes',
-      data: productLikes,
+      data: sessionLikes,
       backgroundColor: ['rgba(255, 99, 132, 0.2)'],
       borderColor: ['rgb(255, 99, 132)'],
       borderWidth: 1
-    }]
-  };
-
-  const configLike = {
-    type: 'bar',
-    data: likeData,
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
     },
-  };
-
-  const viewData = {
-    labels: labels,
-    datasets: [{
+    {
       label: 'Views',
-      data: productViews,
+      data: sessionViews,
       backgroundColor: ['rgba(255, 159, 64, 0.2)'],
       borderColor: ['rgb(255, 159, 64)'],
       borderWidth: 1
     }]
   };
 
-  const configView = {
+  const sessionRawConfig = {
     type: 'bar',
-    data: viewData,
+    data: sessionRawData,
     options: {
       scales: {
         y: {
@@ -269,20 +299,20 @@ function renderChart() {
     },
   };
 
-  const likePercData = {
+  const sessionPercData = {
     labels: labels,
     datasets: [{
       label: 'Like Percentage',
-      data: productPercLikes,
+      data: sessionPercLikes,
       backgroundColor: ['rgba(150, 159, 255, 0.2)'],
       borderColor: ['rgb(255, 159, 64)'],
       borderWidth: 1
     }]
   };
 
-  const configPerc = {
+  const sessionPercConfig = {
     type: 'bar',
-    data: likePercData,
+    data: sessionPercData,
     options: {
       scales: {
         y: {
@@ -292,9 +322,62 @@ function renderChart() {
     },
   };
 
-  const likeChart = new Chart(canvasLike, configLike);
-  const viewChart = new Chart(canvasView, configView);
-  const percChart = new Chart(canvasPerc, configPerc);
+  const totalRawData = {
+    labels: labels,
+    datasets: [{
+      label: 'Total Likes',
+      data: totalLikes,
+      backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+      borderColor: ['rgb(255, 99, 132)'],
+      borderWidth: 1
+    },
+    {
+      label: 'Total Views',
+      data: totalViews,
+      backgroundColor: ['rgba(255, 159, 64, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    }]
+  };
 
+  const totalRawConfig = {
+    type: 'bar',
+    data: totalRawData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const totalPercData = {
+    labels: labels,
+    datasets: [{
+      label: 'Total Like Percentage',
+      data: totalPercLikes,
+      backgroundColor: ['rgba(150, 159, 255, 0.2)'],
+      borderColor: ['rgb(255, 159, 64)'],
+      borderWidth: 1
+    }]
+  };
+
+  const totalPercConfig = {
+    type: 'bar',
+    data: totalPercData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    },
+  };
+
+  const sessionLikeChart = new Chart(sessionRawCanvas, sessionRawConfig);
+  const sessionPercChart = new Chart(sessionPercCanvas, sessionPercConfig);
+  const totalLikeChart = new Chart(totalRawCanvas, totalRawConfig);
+  const totalPercChart = new Chart(totalPercCanvas, totalPercConfig);
 }
 
