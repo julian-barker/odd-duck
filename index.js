@@ -122,7 +122,7 @@ function imgClick(e) {
 // for a new test iteration, create the array of choices and then display them, adding event handlers to the images
 // if max iterations is reached, present user with results button
 function runTestIteration() {
-  if ( testCount === iterations) {
+  if (testCount === iterations) {
     // for (let prod of products) {
     //   prod.totalLikes += prod.sessionLikes;
     //   prod.totalViews += prod.sessionViews;
@@ -167,12 +167,14 @@ function displayResults() {
 
   const images = $('.images');
   const result = $('.result');
+  const data = $('.data');
   const sideColumn = $('.side-column');
   const sideColumnTitle = _('h2');
 
   images.innerHTML = '';
-  sideColumn.innerHTML = '';
   result.innerHTML = '';
+  data.innerHTML = '';
+  sideColumn.innerHTML = '';
   sideColumnTitle.innerHTML = 'Results:';
 
   let greatest = 0;
@@ -208,14 +210,18 @@ function displayResults() {
 
   renderChart();
 
-  localStorage['products'] = JSON.stringify(products);
+  // localStorage['products'] = JSON.stringify(products);
 }
 
 
 // render results charts on results press
 function renderChart() {
-  const div = $('.graphs');
+  const data = $('.data');
 
+  const title = _('h2');
+  const div = _('div');
+  const session = _('div');
+  const total = _('div');
   const sessionRawDiv = _('div');
   const sessionPercDiv = _('div');
   const totalRawDiv = _('div');
@@ -226,27 +232,38 @@ function renderChart() {
   const totalRawCanvas = _('canvas');
   const totalPercCanvas = _('canvas');
 
+  div.classList.add('graphs');
+
   sessionRawCanvas.id = 'session-product-data';
-  // canvasLike.width = '240';
-  // canvasLike.height = '160';
-
+  sessionRawCanvas.width = '500';
+  sessionRawCanvas.height = '300';
   sessionPercCanvas.id = 'session-product-percentages';
-  // canvasPerc.width = '240';
-  // canvasPerc.height = '160';
-
+  sessionPercCanvas.width = '500';
+  sessionPercCanvas.height = '300';
   totalRawCanvas.id = 'total-product-data';
+  totalRawCanvas.width = '500';
+  totalRawCanvas.height = '300';
   totalPercCanvas.id = 'total-product-percentages';
+  totalPercCanvas.width = '500';
+  totalPercCanvas.height = '300';
 
   sessionRawDiv.appendChild(sessionRawCanvas);
   sessionPercDiv.appendChild(sessionPercCanvas);
   totalRawDiv.appendChild(totalRawCanvas);
   totalPercDiv.appendChild(totalPercCanvas);
 
+  title.textContent = 'Data';
 
-  div.appendChild(sessionRawDiv);
-  div.appendChild(sessionPercDiv);
-  div.appendChild(totalRawDiv);
-  div.appendChild(totalPercDiv);
+  session.appendChild(sessionRawDiv);
+  session.appendChild(sessionPercDiv);
+  total.appendChild(totalRawDiv);
+  total.appendChild(totalPercDiv);
+
+  div.appendChild(session);
+  div.appendChild(total);
+
+  data.appendChild(title);
+  data.appendChild(div);
 
   const labels = [];
   const sessionLikes = [];

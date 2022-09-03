@@ -112,6 +112,13 @@ b {
   object-fit: contain;
 }
 
+.testImg:hover {
+  transform: scale(1.1);
+  border: 4px solid gray;
+  box-shadow: 0 0 4px 4px pink;
+  transition: all 300ms ease-out;
+}
+
 .winner {
   width: 60%;
   display: flex;
@@ -142,16 +149,33 @@ b {
   height: 200px;
 }
 
-.graphs {
-  margin-top: 48px;
+.data {
+  margin-top: 16px;
+  width: 100%;
+  /* flex-shrink: 0; */
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   align-items: center;
 }
 
+.graphs {
+  width: 100%;
+}
+
 .graphs > div {
-  height: 400px;
-  width: 600px;
+  margin-top: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.graphs > div > div {
+  height: 350px;
+  width: 550px;
+}
+
+canvas {
+  height: 100%;
 }
 
 #view-results {
@@ -165,10 +189,6 @@ b {
 #header-space {
   margin-top: 100px;
 }
-
-/* @media screen and (max-width: 600px) {
-  
-} */
 
 #sidebar {
   width: 5vw;
